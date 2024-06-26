@@ -14,6 +14,9 @@ public class VideoEndHandler : MonoBehaviour
 
     void OnVideoEnd(VideoPlayer vp)
     {
-        SceneManager.LoadScene(nextSceneName);
+        gameObject.SetActive(false);
+        //&Debug.Log("string");
+        //SceneManager.LoadScene(nextSceneName);
     }
+   
 }
