@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine;
 
 public class Animaciones_Horse : MonoBehaviour
@@ -33,8 +33,8 @@ public class Animaciones_Horse : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Verificar si se presiona la tecla W (trotar/avanzar)
-        if (!isTrot && Input.GetKeyDown(KeyCode.W))
+        // Verificar si se mueve la palanca hacia adelante (trotar/avanzar)
+        if (!isTrot && OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).y > 0.5f)
         {
             isTrot = true;
             trotting = true;
@@ -45,8 +45,8 @@ public class Animaciones_Horse : MonoBehaviour
             Debug.Log("INICIO DE TROTE");
         }
 
-        // Verificar si se hace clic derecho (botón derecho del ratón) para salto
-        if (!isJump && Input.GetMouseButtonDown(1))  // 1 representa el botón derecho del ratón
+        // Verificar si se presiona el botón A (salto)
+        if (Input.GetKeyDown(KeyCode.JoystickButton0))  // Botón A del controlador derecho
         {
             isJump = true;
             jumping = true;
@@ -57,8 +57,8 @@ public class Animaciones_Horse : MonoBehaviour
             Debug.Log("INICIO DE SALTO");
         }
 
-        // Verificar si se presiona la tecla A (izquierda)
-        if (!isLeft && Input.GetKeyDown(KeyCode.A))
+        // Verificar si se mueve la palanca hacia la izquierda
+        if (!isLeft && OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x < -0.5f)
         {
             isLeft = true;
             movingLeft = true;
@@ -69,8 +69,8 @@ public class Animaciones_Horse : MonoBehaviour
             Debug.Log("MOVIMIENTO A LA IZQUIERDA INICIADO");
         }
 
-        // Verificar si se presiona la tecla D (derecha)
-        if (!isRight && Input.GetKeyDown(KeyCode.D))
+        // Verificar si se mueve la palanca hacia la derecha
+        if (!isRight && OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x > 0.5f)
         {
             isRight = true;
             movingRight = true;
@@ -183,4 +183,3 @@ public class Animaciones_Horse : MonoBehaviour
         transform.position = targetPosition;
     }
 }
-
