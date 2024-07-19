@@ -1,0 +1,217 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Animation_Horse : MonoBehaviour
+{
+    Animator n_animator;
+    bool isJump = false;  // Variable para controlar la animación de salto
+    bool isTrot = false;  // Variable para controlar la animación de trote
+    bool isRight = false; // Variable para controlar la animación de movimiento a la derecha
+    bool isLeft = false;  // Variable para controlar la animación de movimiento a la izquierda
+    Vector3 startPosition;
+    Vector3 targetPosition;
+    public float trotDistance = 5f; // Distancia del trote, ajusta según sea necesario
+    public float jumpDistance = 5f; // Distancia del salto, ajusta según sea necesario
+    public float sideStepDistance = 2f; // Distancia de movimiento lateral, ajusta según sea necesario
+    public float jumpHeight = 2f; // Altura del salto, ajusta según sea necesario
+    private bool trotting = false;
+    private bool jumping = false;
+    private bool movingRight = false;
+    private bool movingLeft = false;
+    private float moveProgress = 0f;
+    private float moveDuration = 1f; // Duración del movimiento
+
+    void Start()
+    {
+        n_animator = GetComponent<Animator>();
+        n_animator.applyRootMotion = false; // Desactiva el root motion
+    }
+
+    void Update()
+    {
+        // Verificar si se presiona la palanca hacia adelante (trotar/avanzar)
+        if (!isTrot && OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y > 0.5f)
+        {
+            isTrot = true;
+            trotting = true;
+            moveProgress = 0f;
+            startPosition = transform.position;
+            targetPosition = transform.position + transform.forward * trotDistance;
+            n_animator.SetBool("isTrot", isTrot);
+            Debug.Log("INICIO DE TROTE");
+        }
+
+        // Verificar si se presiona el botón A para salto
+        if (!isJump && OVRInput.GetDown(OVRInput.Button.One))
+        {
+            isJump = true;
+            jumping = true;
+            moveProgress = 0f;
+            startPosition = transform.position;
+            targetPosition = transform.position + transform.forward * jumpDistance;
+            n_animator.SetBool("isJumping", isJump);
+            Debug.Log("INICIO DE SALTO");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+        // Verificar si se presiona la palanca hacia la izquierda
+        if (!isLeft && OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).x < -0.5f)
+        {
+            isLeft = true;
+            movingLeft = true;
+            moveProgress = 0f;
+            startPosition = transform.position;
+            targetPosition = transform.position - transform.right * sideStepDistance;
+            n_animator.SetBool("isLeft", isLeft);
+            Debug.Log("MOVIMIENTO A LA IZQUIERDA INICIADO");
+        }
+
+        // Verificar si se presiona la palanca hacia la derecha
+        if (!isRight && OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).x > 0.5f)
+        {
+            isRight = true;
+            movingRight = true;
+            moveProgress = 0f;
+            startPosition = transform.position;
+            targetPosition = transform.position + transform.right * sideStepDistance;
+            n_animator.SetBool("isRight", isRight);
+            Debug.Log("MOVIMIENTO A LA DERECHA INICIADO");
+        }
+
+        // Control del trote/avance
+        if (trotting)
+        {
+            moveProgress += Time.deltaTime / moveDuration;
+            if (moveProgress >= 1f)
+            {
+                moveProgress = 1f;
+                trotting = false;
+                OnTrotAnimationFinish();
+            }
+
+            transform.position = Vector3.Lerp(startPosition, targetPosition, moveProgress);
+        }
+
+        // Control del salto
+        if (jumping)
+        {
+            moveProgress += Time.deltaTime / moveDuration;
+            if (moveProgress >= 1f)
+            {
+                moveProgress = 1f;
+                jumping = false;
+                OnJumpAnimationFinish();
+            }
+
+            float height = Mathf.Sin(Mathf.PI * moveProgress) * jumpHeight;
+            transform.position = Vector3.Lerp(startPosition, targetPosition, moveProgress) + Vector3.up * height;
+        }
+
+        // Control del movimiento a la izquierda
+        if (movingLeft)
+        {
+            moveProgress += Time.deltaTime / moveDuration;
+            if (moveProgress >= 1f)
+            {
+                moveProgress = 1f;
+                movingLeft = false;
+                OnLeftAnimationFinish();
+            }
+
+            transform.position = Vector3.Lerp(startPosition, targetPosition, moveProgress);
+        }
+
+        // Control del movimiento a la derecha
+        if (movingRight)
+        {
+            moveProgress += Time.deltaTime / moveDuration;
+            if (moveProgress >= 1f)
+            {
+                moveProgress = 1f;
+                movingRight = false;
+                OnRightAnimationFinish();
+            }
+
+            transform.position = Vector3.Lerp(startPosition, targetPosition, moveProgress);
+        }
+    }
+
+    // Método que se llamará al final de la animación de trote
+    public void OnTrotAnimationFinish()
+    {
+        isTrot = false;
+        n_animator.SetBool("isTrot", isTrot);
+        Debug.Log("ANIMACIÓN DE TROTE FINALIZADA");
+
+        // Ajustar la posición final después de la animación
+        transform.position = targetPosition;
+    }
+
+    // Método que se llamará al final de la animación de salto
+    public void OnJumpAnimationFinish()
+    {
+        isJump = false;
+        n_animator.SetBool("isJumping", isJump);
+        Debug.Log("ANIMACIÓN DE SALTO FINALIZADA");
+
+        // Ajustar la posición final después de la animación
+        transform.position = targetPosition;
+    }
+
+    // Método que se llamará al final de la animación de movimiento a la izquierda
+    public void OnLeftAnimationFinish()
+    {
+        isLeft = false;
+        n_animator.SetBool("isLeft", isLeft);
+        Debug.Log("MOVIMIENTO A LA IZQUIERDA FINALIZADO");
+
+        // Ajustar la posición final después de la animación
+        transform.position = targetPosition;
+    }
+
+    // Método que se llamará al final de la animación de movimiento a la derecha
+    public void OnRightAnimationFinish()
+    {
+        isRight = false;
+        n_animator.SetBool("isRight", isRight);
+        Debug.Log("MOVIMIENTO A LA DERECHA FINALIZADO");
+
+        // Ajustar la posición final después de la animación
+        transform.position = targetPosition;
+    }
+}
+
